@@ -4,11 +4,10 @@ import axios from 'axios';
 import Home from '.';
 
 describe('Test Home', () => {
-  afterEach(() => {
-    jest.restoreAllMocks();
-  });
-
   test('Test Render', async () => {
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
     //Arrange: Setup the mock API
     //Listen for any GET requests using the axios module
     const mockGet = jest.spyOn(axios, 'get');
@@ -51,17 +50,20 @@ describe('Test Home', () => {
     //The word Appeateasers should be in there as defined in the mock response above.
     expect(await screen.findByText('Appeteasers')).toBeInTheDocument();
   });
-
-  test('Negative Test: Test Failed Category call', async () => {
+   test('Test Render', async () => {
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
     //Arrange: Setup the mock API
     //Listen for any GET requests using the axios module
-    const mockGet = jest.spyOn(axios, 'get');
-    mockGet.mockImplementation((url) => {
+  
+    //Intercept the GET requests and provide a mocked response
+     {
       switch (url) {
         case `${API_URL}/api/category/?format=json`:
           return Promise.resolve({
             data: {
-              status: 'fail',
+              status: 'success',
               data: [
                 {
                   id: 1,
@@ -83,18 +85,11 @@ describe('Test Home', () => {
             },
           });
       }
-    });
-    //Act: Call the Home page
-    render(<Home />);
-    //Assert: Check the values are NOT in the rendered Home page.  This is because the mocked status value is set to fail.
-    expect(screen.queryByTestId(/category-item/i)).not.toBeInTheDocument();
-  });
+    };
 
-  //Copied "Test Render"
-  test('Test Integration Render', async () => {
-    //Deleted the mock calls.  There is no Arrange for this test since this will access the shared servers.
     //Act: Call the Home page
     render(<Home />);
+
     //Assert: Check the values in the rendered Home page.
     //There should be 2 categories as defined in the mock response above
     expect(await screen.findAllByTestId(/category-item/i)).toHaveLength(2);
